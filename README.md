@@ -1,41 +1,30 @@
-# Como adicionar um novo vídeo (VSL) ao repositório
+# Como adicionar um novo vídeo (VSL) ao repositório (Windows)
 
-Este guia explica como pegar um arquivo `.mp4`, quebrar em HLS (`.m3u8` + `.ts`) com **FFmpeg** e publicar como uma nova VSL no repositório `dev-txt/vsl`.
+Este guia mostra como, no **Windows**, pegar um arquivo `.mp4`, quebrar em HLS (`.m3u8` + `.ts`) com **FFmpeg** e publicar como uma nova VSL no repositório `dev-txt/vsl`.
 
 ---
 
-## 1. Pré-requisitos
+## 1. Pré-requisitos (Windows)
 
 ### 1.1. Ter Git instalado
 
-Verifique no terminal:
+No Prompt de Comando ou PowerShell:
 
     git --version
 
-Se não reconhecer o comando, instale o Git antes de continuar.
+Se não aparecer a versão, instale o Git pelo site oficial antes de continuar.
 
-### 1.2. Instalar FFmpeg (pela linha de comando)
+### 1.2. Instalar o FFmpeg com 1 comando (via winget)
 
-Use o comando de acordo com seu sistema:
+No Windows 10 ou 11, abra o **PowerShell** (pode ser normal mesmo) e rode:
 
-**Ubuntu / Debian (Linux)**
+    winget install "FFmpeg (Essentials Build)"
 
-    sudo apt update && sudo apt install -y ffmpeg
-
-**macOS (com Homebrew instalado)**
-
-    brew install ffmpeg
-
-**Windows (com Chocolatey instalado)**  
-Abra o PowerShell como Administrador:
-
-    choco install ffmpeg -y
-
-Depois confirme se está ok:
+Depois confirme se deu certo:
 
     ffmpeg -version
 
-Se aparecer a versão do FFmpeg, você está pronto.
+Se aparecer a versão do FFmpeg, está pronto para uso.
 
 ---
 
@@ -43,14 +32,12 @@ Se aparecer a versão do FFmpeg, você está pronto.
 
 ### 2.1. Se ainda NÃO tiver o repositório local
 
-No terminal:
+No PowerShell ou Prompt:
 
     git clone https://github.com/dev-txt/vsl.git
     cd vsl
 
 ### 2.2. Se JÁ tiver o repositório local
-
-Entre na pasta do projeto e atualize:
 
     cd vsl
     git pull origin main
@@ -67,7 +54,9 @@ Entre na pasta do projeto e atualize:
    - `vsl_004`
    - etc.
 
-2. Copie o arquivo `.mp4` para a raiz do repositório (por exemplo: `meu_video.mp4` na pasta `vsl`).
+2. Copie o arquivo `.mp4` para a **raiz do repositório** (mesma pasta onde está o `player.html`), por exemplo:
+
+   - `meu_video.mp4`
 
 3. Crie a pasta da nova VSL (exemplo: `vsl_004`):
 
@@ -75,9 +64,9 @@ Entre na pasta do projeto e atualize:
 
 ---
 
-## 4. Quebrar o vídeo em HLS com FFmpeg
+## 4. Quebrar o vídeo em HLS com FFmpeg (comando em 1 linha)
 
-Ainda na raiz do repositório (onde está o `meu_video.mp4`), execute o comando abaixo EM UMA LINHA:
+Ainda na raiz do repositório (onde está `meu_video.mp4`), rode:
 
     ffmpeg -i meu_video.mp4 -codec:v libx264 -codec:a aac -hls_time 6 -hls_playlist_type vod -hls_segment_filename "vsl_004/segment_%03d.ts" vsl_004/index.m3u8
 
@@ -92,7 +81,7 @@ Esse comando vai:
   - `vsl_004/segment_002.ts`
   - ...
 
-Verifique depois:
+Confirme depois:
 
 - Dentro de `vsl_004` deve existir:
   - 1 arquivo `index.m3u8`
@@ -100,21 +89,13 @@ Verifique depois:
 
 ---
 
-## 5. Atualizar o `player.html` (se for usar o parâmetro `?v=`)
+## 5. Atualizar o `player.html` para reconhecer a nova VSL
 
-Se o player estiver configurado para aceitar VSLs via parâmetro, como:
-
-- `player.html?v=vsl_001`
-- `player.html?v=vsl_002`
-- `player.html?v=vsl_003`
-
-Então edite o arquivo `player.html` na raiz do repositório e atualize a lista de VSLs permitidas.
-
-Procure a linha (exemplo):
+Abra o arquivo `player.html` na raiz do repositório e procure a linha:
 
     const allowed = ['vsl_001', 'vsl_002', 'vsl_003'];
 
-Inclua a nova VSL, por exemplo:
+Inclua a nova VSL na lista. Exemplo, se criou `vsl_004`:
 
     const allowed = ['vsl_001', 'vsl_002', 'vsl_003', 'vsl_004'];
 
@@ -124,14 +105,14 @@ Salve o arquivo.
 
 ## 6. Comitar e enviar as mudanças para o GitHub
 
-Na raiz do repositório, execute:
+Na raiz do repositório:
 
     git add vsl_004
     git add player.html
     git commit -m "Add nova VSL vsl_004"
     git push origin main
 
-Após o `git push`, o GitHub Pages vai publicar automaticamente a nova versão do site.
+O GitHub Pages vai atualizar o site automaticamente após o `push`.
 
 ---
 
@@ -139,15 +120,15 @@ Após o `git push`, o GitHub Pages vai publicar automaticamente a nova versão d
 
 ### 7.1. Via iframe (usando `player.html`)
 
-Depois do deploy, a URL base será algo como:
+A URL base do site é:
 
     https://dev-txt.github.io/vsl/
 
-Para a nova VSL, você pode usar:
+A nova VSL ficará acessível em:
 
     https://dev-txt.github.io/vsl/player.html?v=vsl_004
 
-Exemplo de iframe para embutir em qualquer página:
+Exemplo de uso com `<iframe>` em qualquer página HTML:
 
     <iframe
       src="https://dev-txt.github.io/vsl/player.html?v=vsl_004"
@@ -158,9 +139,9 @@ Exemplo de iframe para embutir em qualquer página:
       allowfullscreen>
     </iframe>
 
-### 7.2. Via player próprio (embed direto)
+### 7.2. Via player próprio (embed direto em outro player HLS)
 
-A URL pública da playlist HLS da nova VSL será:
+A playlist HLS pública da nova VSL será:
 
     https://dev-txt.github.io/vsl/vsl_004/index.m3u8
 
