@@ -137,10 +137,19 @@
     video.src = src;
   }
 
+  // autoplay mudo
   video.muted = true;
   video.play().catch(() => {});
 
+  // clique no overlay: reinicia e desmuta
   overlay.addEventListener('click', () => {
+    // volta pro início
+    try {
+      video.currentTime = 0;
+    } catch (e) {
+      // se algum browser frescar, ignora
+    }
+
     video.muted = false;
     video.volume = 1;
     video.play().catch(() => {});
