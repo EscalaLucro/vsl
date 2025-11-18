@@ -149,12 +149,19 @@ Para a nova VSL, você pode usar:
 
 Exemplo de iframe para embutir em qualquer página:
 
-```html
-<iframe
-  src="https://dev-txt.github.io/vsl/player.html?v=vsl_004"
-  width="100%"
-  height="360"
-  frameborder="0"
-  allow="autoplay; fullscreen"
-  allowfullscreen>
-</iframe>
+    <iframe
+      src="https://dev-txt.github.io/vsl/player.html?v=vsl_004"
+      width="100%"
+      height="360"
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen>
+    </iframe>
+
+### 7.2. Via player próprio (embed direto)
+
+A URL pública da playlist HLS da nova VSL será:
+
+    https://dev-txt.github.io/vsl/vsl_004/index.m3u8
+
+Você pode usar essa URL em qualquer player compatível com HLS (por exemplo, usando `hls.js` em uma página própria).
