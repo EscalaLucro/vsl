@@ -5,6 +5,8 @@ Este guia mostra como, no **Windows**, pegar um arquivo `.mp4`, quebrar em HLS (
 1. Modo recomendado: **script `add-vsl.ps1`** (automático: ADD/DELETE + update do `player.html`)
 2. Modo manual: comandos diretos (para quem quiser controle total)
 
+> Se você **copiar ou fizer fork** deste repositório, lembre-se de ajustar o GitHub Pages e as URLs para o **seu usuário**. A seção 3 explica isso.
+
 ---
 
 ## 1. Pré-requisitos (Windows)
@@ -47,7 +49,48 @@ No PowerShell ou Prompt:
 
 ---
 
-## 3. Modo recomendado: usando o script `add-vsl.ps1` (ADD & DELETE)
+## 3. Configurar o GitHub Pages no SEU repositório
+
+Se você **copiar ou fizer fork** deste repositório para a sua conta, precisa configurar o **GitHub Pages** para que as URLs do player e das playlists funcionem no seu usuário.
+
+1. No site do GitHub, abra o seu repositório copiado (por exemplo, `seuusuario/vsl`).  
+2. Vá em **Settings** (Configurações) do repositório.
+3. No menu lateral, clique em **Pages**.
+4. Em **Build and deployment**, configure:
+   
+   - **Source**: `Deploy from a branch`
+   - **Branch**: `main`
+   - **Folder**: `/ (root)`
+
+5. Clique em **Save**.
+6. Aguarde alguns instantes até aparecer uma mensagem do tipo:
+
+       Your site is live at https://SEU-USUARIO.github.io/vsl/
+
+   - Se o seu usuário no GitHub for `seuusuario` e o repositório se chamar `vsl`, a URL base será:
+
+         https://seuusuario.github.io/vsl/
+
+7. Todas as URLs de exemplo deste README usam:
+
+       https://dev-txt.github.io/vsl/
+
+   Se você estiver usando **seu próprio repositório**, troque `dev-txt` pelo **seu usuário** em todas as URLs, por exemplo:
+
+   - De:
+
+         https://dev-txt.github.io/vsl/player.html?v=vsl_004
+
+   - Para algo como:
+
+         https://seuusuario.github.io/vsl/player.html?v=vsl_004
+
+> Se você está usando diretamente o repositório original `dev-txt/vsl`, não precisa mudar nada aqui.  
+> Se fez fork/cópia, configure o Pages e ajuste as URLs.
+
+---
+
+## 4. Modo recomendado: usando o script `add-vsl.ps1` (ADD & DELETE)
 
 O script `add-vsl.ps1` automatiza:
 
@@ -59,13 +102,13 @@ O script `add-vsl.ps1` automatiza:
 
 > O script foi feito para rodar em **Windows / PowerShell**.
 
-### 3.1. Pré-requisitos específicos do script
+### 4.1. Pré-requisitos específicos do script
 
 - FFmpeg instalado e acessível no `PATH` (veja seção 1.2).
 - Repositório `vsl` clonado localmente (veja seção 2).
 - Arquivo `add-vsl.ps1` salvo na **raiz do repositório** (mesmo lugar do `player.html`).
 
-### 3.2. Executando o script
+### 4.2. Executando o script
 
 No PowerShell:
 
@@ -82,7 +125,7 @@ Escolha `1` ou `2` e pressione Enter.
 
 ---
 
-### 3.3. Opção 1 – Adicionar nova VSL via script
+### 4.3. Opção 1 – Adicionar nova VSL via script
 
 Fluxo quando você escolhe **1) Adicionar nova VSL**:
 
@@ -109,7 +152,7 @@ Fluxo quando você escolhe **1) Adicionar nova VSL**:
      - `git commit`
      - `git push origin main`
 
-3. No final, o script mostra as URLs prontas, por exemplo:
+3. No final, o script mostra as URLs prontas, por exemplo (para o repositório `dev-txt/vsl`):
 
    - Playlist HLS:
 
@@ -119,9 +162,11 @@ Fluxo quando você escolhe **1) Adicionar nova VSL**:
 
          https://dev-txt.github.io/vsl/player.html?v=vsl_00X
 
+> Se for o **seu repositório**, troque `dev-txt` pelo **seu usuário GitHub** nas URLs.
+
 ---
 
-### 3.4. Opção 2 – Deletar VSL existente via script
+### 4.4. Opção 2 – Deletar VSL existente via script
 
 Fluxo quando você escolhe **2) Deletar VSL existente**:
 
@@ -137,7 +182,7 @@ Fluxo quando você escolhe **2) Deletar VSL existente**:
 
        Digite o nome exato da VSL a deletar (ex: vsl_004)
 
-3. PedE uma confirmação:
+3. Pede uma confirmação:
 
        Tem certeza que deseja deletar vsl_004? (s/n)
 
@@ -161,7 +206,7 @@ Fluxo quando você escolhe **2) Deletar VSL existente**:
 
        Remocao de vsl_004 concluida.
 
-### 3.5. Quando faz sentido usar o script
+### 4.5. Quando faz sentido usar o script
 
 Use o `add-vsl.ps1` quando quiser:
 
@@ -174,11 +219,11 @@ Se quiser controle manual, use a próxima seção.
 
 ---
 
-## 4. Modo manual: sem script
+## 5. Modo manual: sem script
 
 Se você prefere fazer tudo na mão (ou se o script não estiver disponível), dá para fazer o processo inteiro manualmente.
 
-### 4.1. Preparar o novo vídeo
+### 5.1. Preparar o novo vídeo
 
 1. Escolha o nome da pasta da nova VSL:
 
@@ -198,7 +243,7 @@ Se você prefere fazer tudo na mão (ou se o script não estiver disponível), d
 
 ---
 
-### 4.2. Quebrar o vídeo em HLS com FFmpeg (1 linha)
+### 5.2. Quebrar o vídeo em HLS com FFmpeg (1 linha)
 
 Na raiz do repositório, rode:
 
@@ -223,7 +268,7 @@ Confere depois:
 
 ---
 
-### 4.3. Atualizar o `player.html` para reconhecer a nova VSL
+### 5.3. Atualizar o `player.html` para reconhecer a nova VSL
 
 Abra o arquivo `player.html` na raiz do repositório e procure a linha:
 
@@ -237,7 +282,7 @@ Salve o arquivo.
 
 ---
 
-### 4.4. Comitar e enviar as mudanças para o GitHub
+### 5.4. Comitar e enviar as mudanças para o GitHub
 
 Na raiz do repositório:
 
@@ -246,15 +291,15 @@ Na raiz do repositório:
     git commit -m "Add nova VSL vsl_004"
     git push origin main
 
-O GitHub Pages vai atualizar o site automaticamente após o `push`.
+O GitHub Pages vai atualizar o site automaticamente após o `push` (considerando que o Pages já está configurado como explicado na seção 3).
 
 ---
 
-## 5. Como usar a VSL publicada
+## 6. Como usar a VSL publicada
 
-### 5.1. Via iframe (usando `player.html`)
+### 6.1. Via iframe (usando `player.html`)
 
-URL base do site:
+URL base do site do repositório original:
 
     https://dev-txt.github.io/vsl/
 
@@ -273,15 +318,20 @@ Exemplo de uso com `<iframe>` em qualquer página HTML:
       allowfullscreen>
     </iframe>
 
-### 5.2. Via player próprio (HLS direto)
+> Se estiver em **outro repositório**, troque `dev-txt` pelo seu usuário GitHub.
+
+### 6.2. Via player próprio (HLS direto)
 
 Playlist HLS pública (exemplo `vsl_004`):
 
     https://dev-txt.github.io/vsl/vsl_004/index.m3u8
 
-Você pode usar essa URL em qualquer player compatível com HLS (`hls.js`, players nativos, etc).
+Você pode usar essa URL em qualquer player compatível com HLS (`hls.js`, players nativos, etc).  
+Se estiver usando seu próprio repositório, adapte para:
+
+    https://SEU-USUARIO.github.io/vsl/vsl_004/index.m3u8
 
 ---
 
-Modo preguiçoso e eficiente: seção 3 (script).
-Modo raiz e manual: seção 4 (sem script).
+Modo preguiçoso e eficiente: seção 4 (script).
+Modo raiz e manual: seção 5 (sem script).
