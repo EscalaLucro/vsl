@@ -1,10 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>📺 VSL Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Coloca um arquivo favicon.ico na raiz do repo -->
   <link rel="icon" href="favicon.ico">
 
   <style>
@@ -31,6 +30,24 @@
       height: 100%;
       object-fit: cover;
       background: #000;
+    }
+
+    /* ===== Progress bar fake estilo vturb ===== */
+    .progress-wrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 15px;               /* altura pedida */
+      background: rgba(255,255,255,0.12);
+      z-index: 5;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #FB7185;        /* cor pedida */
+      transform-origin: left center;
+      transition: width 0.15s linear;
     }
 
     .unmute-overlay {
@@ -102,6 +119,11 @@
 <div class="video-wrapper">
   <video id="video" autoplay muted playsinline></video>
 
+  <!-- barra de progresso fake -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
   <div class="unmute-overlay" id="unmuteOverlay">
     <div class="unmute-button">
       <div class="unmute-icon">🔇</div>
@@ -120,6 +142,9 @@
   const line1   = overlay.querySelector('.unmute-line-1');
   const line2   = overlay.querySelector('.unmute-line-2');
 
+  const progressBar = document.getElementById('progressBar');
+  const progressWrap = document.getElementById('progressWrap');
+
   // pega ?v=vsl_001, ?v=vsl_002, etc
   const params = new URLSearchParams(window.location.search);
   const requestedId = params.get('v');
@@ -127,22 +152,57 @@
   // *** IMPORTANTE: esta linha é atualizada pelo script add-vsl.ps1 ***
   const allowed = ['vsl_001', 'vsl_002', 'vsl_003'];
 
+  // ===== Função de progresso fake =====
+  // real: 0..1
+  // fake:
+  // - até 80% real, acelera chegando em 95% fake
+  // - depois vai lentinho pro 100%
+  function fakeProgress(real) {
+    if (real <= 0) return 0;
+    if (real < 0.80) {
+      return (real / 0.80) * 0.95;   // acelera no começo
+    }
+    // últimos 20% reais viram só 5% fake
+    const tailReal = (real - 0.80) / 0.20; // 0..1
+    return 0.95 + (tailReal * 0.05);       // lenta no fim
+  }
+
+  let rafId = null;
+  function startProgressLoop() {
+    if (rafId) cancelAnimationFrame(rafId);
+
+    const tick = () => {
+      const dur = video.duration;
+      const cur = video.currentTime;
+
+      if (dur && isFinite(dur) && dur > 0) {
+        const real = Math.min(cur / dur, 1);
+        const fake = fakeProgress(real);
+        progressBar.style.width = (fake * 100).toFixed(3) + '%';
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function resetProgress() {
+    progressBar.style.width = '0%';
+  }
+
   // valida o ID
   if (!requestedId || !allowed.includes(requestedId)) {
-    // ID inválido: mostra erro e não carrega vídeo nenhum
     if (icon)  icon.textContent  = '⚠️';
     if (line1) line1.textContent = 'VIDEO NO ENCONTRADO';
     if (line2) line2.textContent = 'Revise el enlace o ID vsl_00X';
 
-    // desliga click de unmute / restart
     btn.style.cursor = 'default';
     btn.onclick = null;
     overlay.classList.remove('hidden');
 
-    // esconde o elemento <video> pra não aparecer tela preta
     video.style.display = 'none';
-
-    // não segue para configurar HLS
+    progressWrap.style.display = 'none';
   } else {
     const videoId = requestedId;
     const src = `${videoId}/index.m3u8`;
@@ -154,7 +214,6 @@
       hls.loadSource(src);
       hls.attachMedia(video);
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari, iOS
       video.src = src;
     }
 
@@ -162,10 +221,15 @@
     video.muted = true;
     video.play().catch(() => {});
 
+    // quando carregar metadata, inicia barra fake
+    video.addEventListener('loadedmetadata', startProgressLoop);
+    video.addEventListener('play', startProgressLoop);
+
     function restartAndUnmute() {
       try { video.pause(); } catch (e) {}
 
       try { video.currentTime = 0; } catch (e) {}
+      resetProgress();
 
       video.muted = false;
       video.volume = 1;
