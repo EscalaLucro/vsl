@@ -144,7 +144,7 @@
   const line1   = overlay.querySelector('.unmute-line-1');
   const line2   = overlay.querySelector('.unmute-line-2');
 
-  const progressBar = document.getElementById('progressBar');
+  const progressBar  = document.getElementById('progressBar');
   const progressWrap = document.getElementById('progressWrap');
 
   // pega ?v=vsl_001, ?v=vsl_002, etc
@@ -154,18 +154,34 @@
   // *** IMPORTANTE: esta linha é atualizada pelo script add-vsl.ps1 ***
   const allowed = ['vsl_001', 'vsl_002', 'vsl_003'];
 
-  // ===== Função de progresso fake =====
-  // real: 0..1
-  // fake:
-  // - até 80% real, acelera chegando em 95% fake
-  // - depois vai lentinho pro 100%
+  // ===== Config da barra fake =====
+  // A barra vai se comportar como se o vídeo tivesse 2 minutos
+  const FAKE_DURATION_SECONDS = 120; // 2 min
+  let THRESH = 0.8;                  // recalculado quando souber a duração real
+
+  function updateFakeThreshold() {
+    const dur = video.duration;
+    if (dur && isFinite(dur) && dur > 0) {
+      THRESH = FAKE_DURATION_SECONDS / dur;
+
+      // limita para não ficar absurdo
+      THRESH = Math.min(Math.max(THRESH, 0.2), 0.9);
+    }
+  }
+
   function fakeProgress(real) {
     if (real <= 0) return 0;
-    if (real < 0.80) {
-      return (real / 0.80) * 0.95;
+
+    const TARGET = 0.97; // quanto da barra já encheu no THRESH
+
+    if (real < THRESH) {
+      // acelera até quase o fim
+      return (real / THRESH) * TARGET;
     }
-    const tailReal = (real - 0.80) / 0.20; // 0..1
-    return 0.95 + (tailReal * 0.05);
+
+    // depois disso, vai beeem lento até 100%
+    const tailReal = (real - THRESH) / (1 - THRESH); // 0..1
+    return TARGET + (tailReal * (1 - TARGET));
   }
 
   let rafId = null;
@@ -215,8 +231,9 @@
       hls.loadSource(src);
       hls.attachMedia(video);
 
-      // quando o HLS tiver manifest pronto, já inicia o progresso
+      // quando o manifest estiver pronto, calcula THRESH e inicia loop
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        updateFakeThreshold();
         startProgressLoop();
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -227,8 +244,12 @@
     video.muted = true;
     video.play().catch(() => {});
 
-    // redundância saudável: se metadata/play disparar, roda também
-    video.addEventListener('loadedmetadata', startProgressLoop);
+    // quando metadata estiver pronta, recalcula THRESH e inicia loop
+    video.addEventListener('loadedmetadata', () => {
+      updateFakeThreshold();
+      startProgressLoop();
+    });
+
     video.addEventListener('play', startProgressLoop);
 
     function restartAndUnmute() {
@@ -241,6 +262,9 @@
       video.volume = 1;
       video.play().catch(() => {});
       overlay.classList.add('hidden');
+
+      // garante THRESH certo depois do restart
+      updateFakeThreshold();
     }
 
     overlay.addEventListener('click', () => {
