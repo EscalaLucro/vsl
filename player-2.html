@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Player</title>
@@ -32,7 +32,7 @@
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: #FB7185;
+      background: #3B82F6;
       transition: width 0.12s linear;
     }
 
@@ -89,8 +89,8 @@
   <div class="unmute-overlay" id="unmuteOverlay">
     <div class="unmute-button">
       <div class="unmute-icon">🔇</div>
-      <span class="unmute-line-1">SEU VÍDEO JÁ COMEÇOU!</span>
-      <span class="unmute-line-2">CLIQUE PARA OUVIR!</span>
+      <span class="unmute-line-1">YOUR VIDEO HAS STARTED!</span>
+      <span class="unmute-line-2">CLICK HERE TO LISTEN!</span>
     </div>
   </div>
 </div>
@@ -101,14 +101,13 @@
   const overlay     = document.getElementById('unmuteOverlay');
   const progressBar = document.getElementById('progressBar');
 
-  // Pega ?src= da URL
   const params = new URLSearchParams(window.location.search);
   const SRC    = params.get('src');
 
   if (!SRC) {
-    overlay.querySelector('.unmute-icon').textContent  = '⚠️';
-    overlay.querySelector('.unmute-line-1').textContent = 'NENHUM VÍDEO INFORMADO';
-    overlay.querySelector('.unmute-line-2').textContent = 'Adicione ?src=URL_DO_VIDEO';
+    overlay.querySelector('.unmute-icon').textContent   = '⚠️';
+    overlay.querySelector('.unmute-line-1').textContent = 'NO VIDEO PROVIDED';
+    overlay.querySelector('.unmute-line-2').textContent = 'Add ?src=VIDEO_URL';
   } else {
     if (Hls.isSupported()) {
       const hls = new Hls();
@@ -124,7 +123,6 @@
     video.addEventListener('loadedmetadata', () => { updateFakeThreshold(); startProgressLoop(); });
   }
 
-  // --- Barra fake ---
   let THRESH = 0.8;
 
   function updateFakeThreshold() {
@@ -157,7 +155,6 @@
     rafId = requestAnimationFrame(tick);
   }
 
-  // --- Unmute ao clicar ---
   function restartAndUnmute() {
     try { video.pause(); video.currentTime = 0; } catch(e) {}
     progressBar.style.width = '0%';
