@@ -39,15 +39,15 @@
       right: 0;
       bottom: 0;
       height: 15px;                 /* altura pedida */
-      background: rgba(0,0,0,0.3); /* trilha mais transparente */
-      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.65); /* trilha bem visível */
+      border-top: 1px solid rgba(255,255,255,0.15);
       z-index: 9999;                /* acima de tudo */
       pointer-events: none;
     }
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: rgba(251, 113, 133, 0.7); /* rosa semi-transparente */
+      background: #FB7185;          /* cor pedida */
       transform-origin: left center;
       transition: width 0.12s linear;
     }
@@ -152,7 +152,7 @@
   const requestedId = params.get('v');
 
   // *** IMPORTANTE: esta linha é atualizada pelo script add-vsl.ps1 ***
-  const allowed = ['vsl_001', 'vsl_002', 'vsl_003', 'vsl_004', 'vsl_005', 'vsl_006', 'vsl_007', 'vsl_008', 'vsl_009', 'vsl_010', 'vsl_011', 'vsl_012', 'vsl_013', 'vsl_014', 'vsl_015', 'vsl_016', 'vsl_017', 'vsl_018', 'vsl_019'];
+  const allowed = ['vsl_002', 'vsl_003', 'vsl_004', 'vsl_005', 'vsl_006', 'vsl_007', 'vsl_008', 'vsl_009', 'vsl_010', 'vsl_011', 'vsl_012', 'vsl_013', 'vsl_014', 'vsl_015', 'vsl_016', 'vsl_017', 'vsl_018', 'vsl_019', 'vsl_001'];
 
   // ===== Config da barra fake =====
   // Regra:
@@ -295,3 +295,11 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
